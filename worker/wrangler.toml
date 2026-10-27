@@ -1,0 +1,28 @@
+name = "retro-patcher-edge"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+
+[vars]
+# Verify this model is still listed at https://console.groq.com/docs/deprecations
+# (the original spec's "llama3-8b-8192" has been deprecated on Groq; swap back here if yours still works).
+GROQ_MODEL = "llama-3.1-8b-instant"
+
+# Community help requests (90-day expiry, ciphertext for private ones). Create once:
+#   npx wrangler kv namespace create REQUESTS      -> paste the printed id below
+[[kv_namespaces]]
+binding = "REQUESTS"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+# Secrets are NOT stored here:
+#   local:       copy .dev.vars.example to .dev.vars and fill in the key
+#   production:  npx wrangler secret put GROQ_API_KEY
+#                npx wrangler secret put MAINTAINER_TOKEN   (long random string; also keep it for tools/maintainer.py)
+
+# Rate limiting (commented out on purpose, see src/index.ts for the full explanation)
+# [[ratelimits]]
+# name = "RATE_LIMITER"
+# namespace_id = "1001"
+#   [ratelimits.simple]
+#   limit = 20
+#   period = 60

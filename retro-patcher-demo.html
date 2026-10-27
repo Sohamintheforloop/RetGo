@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Retro Game Auto-Patcher: Demo</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--page:#F5F1E8;--card:#FFFDF7;--ink:#0B2545;--muted:#46526B;--line:#8C8670;--soft:#D8D2C0;--accent:#0B2545;--aink:#F5F1E8;--hl:#FFE9A8;--bad:#9B1C1C;--good:#14532D;--ok2:#0B5A2A}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0A0A0B;--card:#141416;--ink:#F2EFE6;--muted:#B5AFA0;--line:#8A8576;--soft:#2F2F33;--accent:#E6B93A;--aink:#0A0A0B;--hl:#4A3B0A;--bad:#FF9B9B;--good:#86EFAC;--ok2:#22863A}}
+:root[data-theme="dark"]{--page:#0A0A0B;--card:#141416;--ink:#F2EFE6;--muted:#B5AFA0;--line:#8A8576;--soft:#2F2F33;--accent:#E6B93A;--aink:#0A0A0B;--hl:#4A3B0A;--bad:#FF9B9B;--good:#86EFAC;--ok2:#22863A}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--page);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:2px solid var(--soft)}
+h1{font-size:1.35rem;margin:0}h2{font-size:1.05rem;margin:0}
+.note,.card,.panel{background:var(--card);border:2px solid var(--soft);border-radius:12px;padding:12px 14px}
+.note{margin:12px 0;color:var(--muted);font-size:.88rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:12px}
+.muted{color:var(--muted);font-size:.86rem;margin:3px 0 6px}
+button{font:inherit;font-weight:600;min-height:40px;padding:5px 12px;border-radius:8px;border:2px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;transition:opacity .15s}
+button.p{background:var(--accent);border-color:var(--accent);color:var(--aink)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.tag{font-size:.72rem;border:1px solid var(--line);border-radius:99px;padding:1px 7px;color:var(--muted)}
+pre{font:12px/1.6 ui-monospace,Consolas,monospace;margin:5px 0 0;overflow-x:auto;white-space:pre-wrap;word-break:break-word;background:var(--page);border:1px solid var(--soft);border-radius:8px;padding:8px}
+.hex b{background:var(--hl);border-radius:3px;padding:0 1px}.hex .a{color:var(--muted)}
+.console{margin-top:14px;border:2px solid var(--line);border-radius:12px;overflow:hidden;background:#0F1115}
+.bar{display:flex;gap:8px;align-items:center;background:#1B1E25;padding:7px 14px;color:#C9D1D9;font-weight:600;font-size:.85rem}
+.bar i{display:inline-block;width:12px;height:12px;border-radius:50%}
+#log{height:210px;overflow-y:auto;padding:10px 14px;font:12.5px/1.6 ui-monospace,Consolas,monospace;color:#C9D1D9}
+#log p{margin:0;white-space:pre-wrap;word-break:break-word}
+.OK{color:#86EFAC}.SKIP{color:#93C5FD}.WARN{color:#FFD479}.ERR{color:#FF9B9B}.t{color:#9AA3B2}
+/* dialogs */
+dialog{background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:14px;width:min(660px,calc(100vw - 20px));max-height:92vh;padding:20px;overflow-y:auto}
+dialog::backdrop{background:rgba(0,0,0,.75)}
+dialog h3{margin:0 0 10px;font-size:1.1rem}dialog ul{padding-left:18px;margin:4px 0}
+label.c{display:flex;gap:10px;align-items:flex-start;margin:9px 0;font-size:.92rem;cursor:pointer}
+input[type=checkbox],input[type=radio]{width:19px;height:19px;accent-color:var(--accent);flex-shrink:0;margin-top:2px}
+input[type=text],select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--page);border:2px solid var(--line);border-radius:8px;padding:7px 9px}
+.err{color:var(--bad);font-weight:600;font-size:.88rem;margin:6px 0}
+.ok{color:var(--good);font-weight:600;font-size:.88rem;margin:6px 0}
+.e2e{border:2px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px}
+.e2e h4{margin:0 0 5px;font-size:.9rem}
+.spin{width:15px;height:15px;animation:s 1s linear infinite;vertical-align:-3px;margin-right:5px}
+@keyframes s{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+/* setup dialog extra */
+.step{border-top:2px solid var(--soft);padding-top:14px;margin-top:14px}
+.step:first-child{border-top:none;padding-top:0;margin-top:0}
+.step h4{margin:0 0 6px;font-size:.97rem;display:flex;align-items:center;gap:8px}
+.chip{font-size:.7rem;background:var(--soft);color:var(--muted);border-radius:99px;padding:1px 8px;font-weight:500}
+.chip.done{background:#D1FAE5;color:#065F46}
+.chip.busy{background:#FEF3C7;color:#92400E}
+.log-mini{margin-top:8px;border-radius:8px;border:1px solid var(--soft);background:var(--page);padding:8px;font:11.5px/1.5 ui-monospace,Consolas,monospace;max-height:100px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
+.fix-item{border:2px solid var(--soft);border-radius:10px;padding:10px 12px;margin-top:8px}
+.fix-item h5{margin:0 0 3px;font-size:.92rem}
+.req-item{border:2px solid var(--soft);border-radius:10px;padding:10px 12px;margin-top:8px;font-size:.88rem}
+.req-item p{margin:0}
+/* public community list */
+.pub-item{border:1px solid var(--soft);border-radius:8px;padding:8px 10px;margin-top:6px;font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <h1>Retro Game Auto-Patcher <span style="font-weight:400;color:var(--muted)">demo</span></h1>
+ <div class="row" style="margin:0">
+  <button id="btn-add">Add a game that does not run</button>
+  <button id="btn-theme" aria-pressed="false">Toggle theme</button>
+ </div>
+</header>
+<p class="note">Simulation — all steps run in your browser against tiny virtual files. The real app edits your actual .exe and registry. The encryption in <b>Get help → private</b> is <b>real</b> Web Crypto (same scheme as the production app). The compat and fix-pack wizard runs a simulated install. Nothing leaves this page.</p>
+
+<div class="grid" id="games"></div>
+
+<div class="panel" style="margin-top:12px">
+ <h2>Hex inspector: <span id="ins-name" style="font-weight:400;color:var(--muted)">select a game above</span></h2>
+ <pre class="hex" id="hex" aria-label="Hex view of the virtual game file"></pre>
+</div>
+
+<div class="console" aria-labelledby="ct">
+ <div class="bar">
+  <span aria-hidden="true"><i style="background:#FF5F57"></i> <i style="background:#FEBC2E"></i> <i style="background:#28C840"></i></span>
+  <span id="ct" style="flex:1;text-align:center">Diagnostics</span>
+  <button onclick="document.getElementById('log').innerHTML=''" style="font-size:.78rem;min-height:28px;padding:2px 8px;border-color:#8B93A1;color:#C9D1D9;background:transparent">Clear</button>
+ </div>
+ <div id="log" role="log" aria-live="polite" aria-label="Execution log" tabindex="0"></div>
+</div>
+</div>
+
+<!-- ===== PERMISSION dialog ===== -->
+<dialog id="dlg-perm" aria-labelledby="perm-title">
+ <h3 id="perm-title">Allow changes to your computer?</h3>
+ <div id="perm-body"></div>
+ <label class="c"><input type="checkbox" id="perm-ok"><span>I understand this edits files and registry values and I allow it.</span></label>
+ <div class="row" style="justify-content:flex-end;margin-top:10px">
+  <button id="perm-no">Cancel</button><button id="perm-yes" class="p" disabled>Allow and apply</button>
+ </div>
+</dialog>
+
+<!-- ===== ADD GAME dialog ===== -->
+<dialog id="dlg-add" aria-labelledby="add-title">
+ <h3 id="add-title">Add a game that does not run</h3>
+ <p class="muted">Saved only on this device. Nothing is sent until you choose Get help.</p>
+ <label for="add-name">Game name</label><input type="text" id="add-name" placeholder="Vampire: The Masquerade – Bloodlines">
+ <label for="add-exe" style="display:block;margin-top:8px">Executable file name</label>
+ <input type="text" id="add-exe" placeholder="vampire.exe">
+ <p class="err" id="add-err" role="alert"></p>
+ <div class="row" style="justify-content:flex-end;margin-top:10px">
+  <button id="add-cancel">Cancel</button><button id="add-ok" class="p">Add game</button>
+ </div>
+</dialog>
+
+<!-- ===== SETUP WIZARD dialog ===== -->
+<dialog id="dlg-setup" aria-labelledby="setup-title">
+ <h3 id="setup-title">Set up <span id="setup-game-name"></span></h3>
+ <p class="muted" style="margin-bottom:0">Follow the steps in order. The app asks before changing anything, and every change can be undone.</p>
+ <div id="setup-body"></div>
+ <div class="row" style="justify-content:flex-end;margin-top:16px"><button id="setup-close" class="p">Close</button></div>
+</dialog>
+
+<!-- ===== GET HELP dialog ===== -->
+<dialog id="dlg-help" aria-labelledby="help-title">
+ <h3 id="help-title">Get help: <span id="help-game-name"></span></h3>
+ <fieldset style="border:0;padding:0;margin:0">
+  <legend style="font-weight:700;margin-bottom:6px">How would you like help?</legend>
+  <label class="c"><input type="radio" name="rt" value="ai"> <span>Ask the AI for suggestions</span></label>
+  <label class="c"><input type="radio" name="rt" value="public"> <span>Ask the community (public, anonymous)</span></label>
+  <label class="c"><input type="radio" name="rt" value="private"> <span>Send privately to the maintainers (end-to-end encrypted)</span></label>
+ </fieldset>
+ <div id="help-form" hidden>
+  <p class="note" id="help-rinfo" style="margin:8px 0 6px"></p>
+  <label for="help-os">Windows version</label>
+  <select id="help-os"><option>Windows 7</option><option>Windows 10</option><option selected>Windows 11</option><option>Other</option></select>
+  <label for="help-tx" style="display:block;margin-top:8px">What goes wrong? (no personal details, 10-1200 chars)</label>
+  <textarea id="help-tx" rows="3" maxlength="1200">Black screen at launch. The game process starts and immediately exits.</textarea>
+  <p style="font-weight:600;margin:8px 0 2px;font-size:.88rem">Exactly what will be sent:</p>
+  <pre id="help-prev" style="font-size:.78rem;max-height:110px;overflow-y:auto"></pre>
+  <p class="muted">Paths, emails, IPs and links are removed before sending. No account or IP is stored.</p>
+  <label class="c"><input type="checkbox" id="help-consent"><span id="help-consent-label"></span></label>
+ </div>
+ <p class="err" id="help-err" role="alert"></p>
+ <div id="help-res" aria-live="polite"></div>
+ <!-- Your requests inbox -->
+ <div id="help-inbox"></div>
+ <!-- Community public list -->
+ <div id="help-community" style="margin-top:10px"></div>
+ <div class="row" style="justify-content:flex-end;margin-top:12px">
+  <button id="help-close">Close</button><button id="help-send" class="p" disabled>Send</button>
+ </div>
+</dialog>
+
+<script>
+/* ============================================================
+   CATALOGUE
+   ============================================================ */
+const CAT=[
+ {id:'max_payne',     name:'Max Payne',                              year:'2001', blurb:'Fixes the modern-CPU crash loop and adds widescreen.',     off:0x10, orig:'74 05 90 90', rep:'EB 05 90 90', rk:'ForceSingleCore', rv:1,
+  compat:{rec:['DISABLEDXMAXIMIZEDWINDOWEDMODE'],opt:['WINXPSP3','RUNASADMIN','HIGHDPIAWARE']},
+  fixes:[{id:'mp1_mod',name:'Max Payne Modern Pack',desc:'Widescreen fix, Direct3D wrapper and audio update by ThirteenAG.',files:['MaxPayne.WidescreenFix.asi','dsoal-aldrv.dll','dsound.dll']}]},
+ {id:'max_payne_2',   name:'Max Payne 2: The Fall of Max Payne',     year:'2003', blurb:'Widescreen and DirectX wrappers for Windows 10/11.',         off:0x18, orig:'75 0C 6A 00', rep:'EB 0C 6A 00', rk:'ForceSingleCore', rv:1,
+  compat:{rec:['DISABLEDXMAXIMIZEDWINDOWEDMODE'],opt:['WINXPSP3','RUNASADMIN']},
+  fixes:[{id:'mp2_mod',name:'Max Payne 2 Modern Pack',desc:'Widescreen fix and controller wrapper by ThirteenAG.',files:['MaxPayne2.WidescreenFix.asi','Xidi.32.dll']}]},
+ {id:'stalker',       name:'S.T.A.L.K.E.R.: Shadow of Chernobyl',   year:'2007', blurb:'Compatibility settings for the original 2007 game.',          off:0x20, orig:'00 00 B4 42', rep:'00 00 70 42', rk:'RenderPath', rv:'r2',
+  compat:{rec:[],opt:['DISABLEDXMAXIMIZEDWINDOWEDMODE','WIN7RTM','RUNASADMIN']},
+  fixes:[]},
+ {id:'deus_ex',       name:'Deus Ex',                                year:'2000', blurb:'Fixes mouse lag on fast CPUs.',                               off:0x08, orig:'8B 45 FC 3B', rep:'8B 45 FC EB', rk:'FixMouse', rv:1,
+  compat:{rec:['WINXPSP3'],opt:['RUNASADMIN','DISABLEDXMAXIMIZEDWINDOWEDMODE']},
+  fixes:[]},
+ {id:'thief2',        name:'Thief II: The Metal Age',                year:'2000', blurb:'Stops the sound-driver crash.',                               off:0x28, orig:'75 0C 6A 00', rep:'EB 0C 6A 00', rk:'UseSoftwareAudio', rv:1,
+  compat:{rec:['WINXPSP3'],opt:['RUNASADMIN']},
+  fixes:[]},
+ {id:'mafia',         name:'Mafia: The City of Lost Heaven',         year:'2002', blurb:'Fixes broken race-car physics.',                              off:0x30, orig:'D9 05 00 40', rep:'D9 05 00 80', rk:'FramerateCap', rv:60,
+  compat:{rec:['DISABLEDXMAXIMIZEDWINDOWEDMODE'],opt:['WINXPSP3']},
+  fixes:[]},
+];
+const FLAG_LABEL={DISABLEDXMAXIMIZEDWINDOWEDMODE:'Turn off fullscreen optimisations',WINXPSP3:'Run in Windows XP (SP3) mode',WIN98:'Run in Windows 98 mode',WIN7RTM:'Run in Windows 7 mode',RUNASADMIN:'Always run as administrator',HIGHDPIAWARE:'Let game handle high-DPI scaling',};
+const hb=s=>s.trim().split(/\s+/).map(h=>parseInt(h,16)),fmt=b=>b.toString(16).toUpperCase().padStart(2,'0'),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* Virtual state */
+const ST={};let activeId=CAT[0].id,globalBusy=false;
+for(const g of CAT){const f=new Uint8Array(64);for(let i=0;i<64;i++)f[i]=(i*37+11)&255;f.set(hb(g.orig),g.off);
+ ST[g.id]={file:f,backup:null,reg:{},compat:{flags:[],managed:false},fixState:{}};}
+const custom=[];
+/* Simulated community/private request stores */
+const pubPosts=[];const inbox=[];const replyBox={};
+
+/* ============================================================
+   LOG
+   ============================================================ */
+const logEl=document.getElementById('log');
+function log(cls,tag,msg){const p=document.createElement('p');p.innerHTML='<span class="t">'+new Date().toLocaleTimeString('en-GB')+'</span> <span class="'+cls+'">'+tag+'</span> '+esc(msg);logEl.appendChild(p);logEl.scrollTop=logEl.scrollHeight}
+const $=id=>document.getElementById(id);
+
+/* ============================================================
+   HEX INSPECTOR
+   ============================================================ */
+function renderHex(){
+ const g=CAT.find(x=>x.id===activeId);
+ if(!g){$('hex').innerHTML='';$('ins-name').textContent='select a game above';return}
+ const s=ST[g.id],n=hb(g.orig).length;
+ $('ins-name').textContent=g.name+' (virtual file)';
+ let h='';for(let r=0;r<4;r++){h+='<span class="a">'+(r*16).toString(16).toUpperCase().padStart(4,'0')+'</span>  ';for(let c=0;c<16;c++){const i=r*16+c,v=fmt(s.file[i]);h+=(i>=g.off&&i<g.off+n?'<b>'+v+'</b>':v)+' '}h+='\n'}
+ $('hex').innerHTML=h}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+function renderCards(){
+ const root=$('games');root.innerHTML='';
+ for(const g of[...CAT,...custom]){
+  const s=g.custom?null:ST[g.id];
+  const d=document.createElement('article');d.className='card';
+  const fixes=g.fixes||[];
+  const hasFixPack=fixes.length>0;
+  const fixInstalled=hasFixPack&&s&&fixes.every(f=>s.fixState[f.id]==='installed');
+  const compatApplied=s&&s.compat.managed;
+  const typeBadge=g.custom?'Added by you':(hasFixPack?'Fix pack available':'Compatibility only');
+  d.innerHTML=`<h2>${esc(g.name)} <span class="tag">${esc(g.custom?'added':g.year)}</span></h2>
+<p class="muted">${esc(g.blurb||'No verified fix yet — use Get help to ask the AI or community.')}</p>
+<div class="row" id="row-${esc(g.id)}"></div>`;
+  root.appendChild(d);
+  const row=d.querySelector('.row');
+  const btn=(label,fn,primary=false)=>{const b=document.createElement('button');b.textContent=label;if(primary)b.className='p';b.disabled=globalBusy;b.onclick=fn;row.appendChild(b);return b};
+  if(!g.custom){
+   btn('Set up game',()=>openSetup(g),true);
+   btn('Patch game',()=>patch(g));
+   btn('Restore',()=>restore(g));
+   btn('Simulate other version',()=>{ST[g.id].file[g.off]=0x55;activeId=g.id;log('WARN','WARN ',g.name+': a byte was changed to simulate a different game build.');renderAll()});
+  }
+  btn('Get help',()=>openHelp(g));
+ }
+}
+function renderAll(){renderCards();renderHex()}
+
+/* ============================================================
+   PATCH FLOW
+   ============================================================ */
+function askPerm(g){return new Promise(res=>{
+ const d=$('dlg-perm');
+ $('perm-body').innerHTML='<p>Patching <b>'+esc(g.name)+'</b>. A .bak backup is made first; nothing is written if the bytes do not match.</p><b>Executable</b><ul><li><code>0x'+g.off.toString(16).toUpperCase()+': '+g.orig+' → '+g.rep+'</code></li></ul><b>Registry</b><ul><li><code>HKCU\\SOFTWARE\\RetroPatcherDemo\\'+esc(g.id)+'\\'+esc(g.rk)+' = '+esc(g.rv)+'</code></li></ul>';
+ $('perm-ok').checked=false;$('perm-yes').disabled=true;
+ $('perm-ok').onchange=()=>$('perm-yes').disabled=!$('perm-ok').checked;
+ const done=v=>{d.close();res(v)};
+ $('perm-yes').onclick=()=>done(true);$('perm-no').onclick=()=>done(false);d.oncancel=e=>{e.preventDefault();done(false)};d.showModal()})}
+
+async function patch(g){
+ if(globalBusy)return;
+ activeId=g.id;globalBusy=true;renderAll();
+ try{const s=ST[g.id];
+  log('','INFO ','[1/3] Edge service: Groq converts catalogue notes for '+g.name+' into JSON…');await sleep(650);
+  log('OK','OK   ','Plan validated: 1 registry fix, 1 byte patch.');
+  log('','INFO ','[2/3] Waiting for your permission…');
+  if(!await askPerm(g)){log('WARN','WARN ','Cancelled. Nothing was changed.');return}
+  log('','INFO ','[3/3] Local patcher received plan.');await sleep(380);
+  const o=g.off,orig=hb(g.orig),rep=hb(g.rep),cur=Array.from(s.file.slice(o,o+orig.length));
+  const eq=(a,b)=>a.every((v,i)=>v===b[i]);
+  const st=eq(cur,orig)?'patch':eq(cur,rep)?'skip':'abort';
+  if(st==='abort'){log('ERR','ABORT','Bytes at 0x'+o.toString(16).toUpperCase()+' are '+cur.map(fmt).join(' ')+', expected '+g.orig+' or '+g.rep+'. Different game version. Nothing was changed.');return}
+  log('','INFO ','Byte check passed.');await sleep(220);
+  const rkey='HKCU\\SOFTWARE\\RetroPatcherDemo\\'+g.id+'\\'+g.rk;
+  if(s.reg[rkey]===g.rv)log('SKIP','SKIP ',rkey+' already '+g.rv+', skipped.');
+  else{log('OK','OK   ',rkey+': '+(rkey in s.reg?s.reg[rkey]:'not set')+' → '+g.rv);s.reg[rkey]=g.rv}
+  if(st==='skip')log('SKIP','SKIP ','Byte patch already applied, skipped.');
+  else{if(!s.backup){s.backup=s.file.slice();log('OK','OK   ','Backup created.')}s.file.set(rep,o);log('OK','OK   ','Patch at 0x'+o.toString(16).toUpperCase()+': '+g.orig+' → '+g.rep)}
+  log('OK','OK   ',g.name+': patch finished.')
+ }finally{globalBusy=false;renderAll()}}
+
+function restore(g){const s=ST[g.id];activeId=g.id;if(!s.backup){log('WARN','WARN ','No backup for '+g.name+'. Patch first.');renderHex();return}s.file=s.backup.slice();s.backup=null;log('OK','OK   ','Restored '+g.name+' from backup.');renderAll()}
+
+/* ============================================================
+   ADD GAME
+   ============================================================ */
+$('btn-add').onclick=()=>{$('add-name').value='';$('add-exe').value='';$('add-err').textContent='';$('dlg-add').showModal()};
+$('add-cancel').onclick=()=>$('dlg-add').close();
+$('add-ok').onclick=()=>{
+ const n=$('add-name').value.trim(),e=$('add-exe').value.trim();
+ if(n.length<2)return $('add-err').textContent='Enter the game name.';
+ if(!/^[\w .()-]+\.exe$/i.test(e))return $('add-err').textContent='Enter just the file name ending in .exe (e.g. vampire.exe).';
+ if([...CAT,...custom].some(x=>x.name.toLowerCase()===n.toLowerCase()))return $('add-err').textContent='A game with that name is already in the list.';
+ custom.push({id:'custom_'+crypto.randomUUID(),name:n,exe:e,blurb:'',custom:true,year:'',fixes:[]});
+ $('dlg-add').close();log('','INFO ','Added '+n+'. Use Get help on its card to ask for a fix.');renderCards()};
+
+/* ============================================================
+   SETUP WIZARD
+   ============================================================ */
+let setupGame=null;
+function openSetup(g){
+ setupGame=g;$('setup-game-name').textContent=g.name;
+ buildSetup(g);$('dlg-setup').showModal()}
+$('setup-close').onclick=()=>$('dlg-setup').close();
+
+function buildSetup(g){
+ const s=ST[g.id];
+ const body=$('setup-body');body.innerHTML='';
+ const compat=g.compat||{rec:[],opt:[]};
+ const allFlags=[...compat.rec,...compat.opt.filter(f=>!compat.rec.includes(f))];
+ const hasCompat=allFlags.length>0;
+ const fixes=g.fixes||[];
+ const hasFixPack=fixes.length>0;
+ let html='';
+
+ /* Step 1 – Find the game */
+ html+=`<div class="step"><h4>1. Find the game <span class="chip done">Done</span></h4>
+ <p class="muted">Program: <code>C:\\Games\\${esc(g.name)}\\${esc(g.id)}.exe</code> (simulated)</p></div>`;
+
+ /* Step 2 – Compat */
+ html+=`<div class="step" id="s-compat">
+ <h4>2. Windows compatibility settings <span class="chip" id="chip-compat">${s.compat.managed?'Applied':'Optional'}</span></h4>
+ <p class="muted">Same as right-click → Properties → Compatibility. Per game, per Windows account. Undo restores exactly what was there before.</p>`;
+ if(hasCompat){
+  html+=`<div style="margin:8px 0" id="compat-flags">`;
+  for(const f of compat.rec){const id='cf_'+f;html+=`<label class="c"><input type="checkbox" id="${id}" data-flag="${f}" checked> <span>${esc(FLAG_LABEL[f]||f)} <span class="tag">Recommended</span></span></label>`;}
+  for(const f of compat.opt.filter(f=>!compat.rec.includes(f))){const id='cf_'+f;html+=`<label class="c"><input type="checkbox" id="${id}" data-flag="${f}"> <span>${esc(FLAG_LABEL[f]||f)}</span></label>`;}
+  html+=`</div>`;
+  html+=`<label class="c"><input type="checkbox" id="compat-confirm"> <span>I understand this changes Windows compatibility settings for this game.</span></label>`;
+  html+=`<div class="row"><button id="compat-apply" class="p" disabled>Apply these settings</button>`;
+  if(s.compat.managed)html+=`<button id="compat-undo">Undo</button>`;
+  html+=`</div><div class="log-mini" id="compat-log" hidden></div>`;
+ }else html+=`<p class="muted">No compatibility options are suggested for this game.</p>`;
+ html+=`</div>`;
+
+ /* Step 3 – Fix pack */
+ if(hasFixPack){
+  html+=`<div class="step" id="s-fixes">
+  <h4>3. Install the fix pack <span class="chip" id="chip-fixes">${fixes.every(f=>s.fixState[f.id]==='installed')?'Done':'To do'}</span></h4>
+  <p class="muted">These files come inside this app, were fingerprint-checked, and are never downloaded while you play.</p>`;
+  for(const fix of fixes){
+   const st=s.fixState[fix.id]||'not_installed';
+   html+=`<div class="fix-item">
+   <h5>${esc(fix.name)}</h5>
+   <p class="muted" style="margin:2px 0 4px">${esc(fix.desc)}</p>
+   <p class="muted" style="margin:0">Files: ${fix.files.map(f=>'<code>'+esc(f)+'</code>').join(', ')} · Status: <b>${st==='installed'?'Installed':st==='modified'?'Modified':'Not installed'}</b></p>
+   <div class="row" style="margin-top:6px">
+    ${st!=='installed'?`<button class="p fix-install" data-fid="${fix.id}" data-gid="${g.id}">${st==='modified'?'Reinstall':'Install'}</button>`:''}
+    ${st!=='not_installed'?`<button class="fix-remove" data-fid="${fix.id}" data-gid="${g.id}">Remove</button>`:''}
+   </div>
+   <div class="log-mini" id="fixlog-${fix.id}" hidden></div></div>`;
+  }
+  html+=`</div>`;
+ }
+
+ /* Last step – Launch */
+ const stepN=hasFixPack?4:3;
+ html+=`<div class="step"><h4>${stepN}. Launch and test</h4>
+ <ol style="padding-left:18px;margin:4px 0;font-size:.9rem"><li>Start the game the way you normally do.</li><li>If it fails: return here and use Remove (fix pack) or Undo (compat) to restore.</li></ol></div>`;
+
+ body.innerHTML=html;
+
+ /* Wire compat apply */
+ if(hasCompat){
+  const confirmCk=$('compat-confirm');
+  const applyBtn=$('compat-apply');
+  confirmCk.addEventListener('change',()=>applyBtn.disabled=!confirmCk.checked);
+  applyBtn.addEventListener('click',async()=>{
+   const chosen=Array.from(document.querySelectorAll('#compat-flags input[type=checkbox]:checked')).map(c=>c.dataset.flag);
+   if(!chosen.length){alert('Tick at least one option.');return}
+   applyBtn.disabled=true;applyBtn.textContent='Applying…';await sleep(500);
+   s.compat.flags=chosen;s.compat.managed=true;
+   const logEl2=$('compat-log');logEl2.hidden=false;
+   logEl2.textContent='[success] Applied: '+chosen.map(f=>FLAG_LABEL[f]||f).join(', ');
+   log('OK','OK   ',g.name+' compat applied: '+chosen.join(', '));
+   $('chip-compat').textContent='Applied';$('chip-compat').className='chip done';
+   applyBtn.textContent='Applied';
+   if(!document.getElementById('compat-undo')){const u=document.createElement('button');u.id='compat-undo';u.textContent='Undo';u.addEventListener('click',()=>undoCompat(g));applyBtn.parentNode.appendChild(u)}
+  });
+  const undoBtn=$('compat-undo');
+  if(undoBtn)undoBtn.addEventListener('click',()=>undoCompat(g));
+ }
+
+ /* Wire fix install/remove */
+ document.querySelectorAll('.fix-install').forEach(b=>b.addEventListener('click',()=>runFix(b.dataset.gid,b.dataset.fid,'install')));
+ document.querySelectorAll('.fix-remove').forEach(b=>b.addEventListener('click',()=>runFix(b.dataset.gid,b.dataset.fid,'uninstall')));
+}
+
+function undoCompat(g){const s=ST[g.id];s.compat.flags=[];s.compat.managed=false;log('OK','OK   ',g.name+' compat settings removed (restored to previous state).');buildSetup(g);}
+
+async function runFix(gid,fid,action){
+ const g=CAT.find(x=>x.id===gid);if(!g)return;
+ const fix=g.fixes.find(f=>f.id===fid);if(!fix)return;
+ const s=ST[gid];
+ const logEl2=$('fixlog-'+fid);if(logEl2){logEl2.hidden=false;logEl2.textContent=''}
+ const ok=confirm((action==='install'?'Install':'Remove')+' "'+fix.name+'"?\n\nFiles:\n'+fix.files.join('\n')+'\n\nTick OK to allow and proceed.');
+ if(!ok){if(logEl2)logEl2.textContent='Cancelled.';return}
+ if(logEl2)logEl2.textContent='Working…';
+ await sleep(700);
+ if(action==='install'){
+  s.fixState[fid]='installed';
+  if(logEl2)logEl2.textContent='[success] Installed: '+fix.files.join(', ');
+  log('OK','OK   ',g.name+' fix pack "'+fix.name+'" installed.');
+ }else{
+  s.fixState[fid]='not_installed';
+  if(logEl2)logEl2.textContent='[success] Removed: '+fix.files.join(', ');
+  log('OK','OK   ',g.name+' fix pack "'+fix.name+'" removed.');
+ }
+ buildSetup(g);renderCards()}
+
+/* ============================================================
+   E2EE HELPERS (real Web Crypto – same scheme as production)
+   ============================================================ */
+const EC={name:'ECDH',namedCurve:'P-256'};
+const enc2=new TextEncoder(),dec=new TextDecoder();
+const SALT=enc2.encode('rgap-e2ee-v1-salt'),INFO_B=enc2.encode('rgap-e2ee-v1'),AAD=enc2.encode('rgap-v1');
+const b64=b=>btoa(String.fromCharCode(...new Uint8Array(b))),ub64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function kdf(priv,pub){const bits=await crypto.subtle.deriveBits({name:'ECDH',public:pub},priv,256);const hk=await crypto.subtle.importKey('raw',bits,'HKDF',false,['deriveKey']);return crypto.subtle.deriveKey({name:'HKDF',hash:'SHA-256',salt:SALT,info:INFO_B},{name:'HKDF'},hk,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+const impPub=s=>crypto.subtle.importKey('raw',ub64(s),EC,true,[]);
+async function seal(pubB64,text){const eph=await crypto.subtle.generateKey(EC,false,['deriveBits']),k=await kdf(eph.privateKey,await impPub(pubB64)),iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:AAD},k,enc2.encode(text));return{v:1,epk:b64(await crypto.subtle.exportKey('raw',eph.publicKey)),iv:b64(iv),ct:b64(ct)}}
+async function openE(priv,env){const k=await kdf(priv,await impPub(env.epk));return dec.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:ub64(env.iv),additionalData:AAD},k,ub64(env.ct)))}
+
+/* Maintainer keypair (simulated server-side, generated fresh each page load) */
+let MAINT=null,MPUB='';
+async function initCrypto(){MAINT=await crypto.subtle.generateKey(EC,false,['deriveBits']);MPUB=b64(await crypto.subtle.exportKey('raw',MAINT.publicKey))}
+
+/* ============================================================
+   PII SCRUBBER
+   ============================================================ */
+const SCRUB=[[/[A-Za-z]:\\[^\s"'<>|]*/g,'[path removed]'],[/\\\\[^\s"'<>|]+/g,'[path removed]'],[/[\w.+-]+@[\w-]+\.[\w.-]+/g,'[email removed]'],[/\b\d{1,3}(?:\.\d{1,3}){3}\b/g,'[ip removed]'],[/https?:\/\/\S+/g,'[link removed]']];
+const scrub=t=>SCRUB.reduce((a,[re,to])=>a.replace(re,to),t).trim();
+const PIRACY=/\b(cracks?|cracked|keygen|no[- ]?cd|warez|torrents?|pirat\w*|serial keys?|bypass\w*(?:drm|copy protection)|drm removal)\b/i;
+const ROUTE_INFO={ai:{detail:'Your text goes through our edge service to the Groq AI, which must read it, so this route is NOT end-to-end encrypted. You get advice only.',consent:'I agree to send the text below to the AI service to get advice.'},public:{detail:'Posted publicly and anonymously so others can help. Paths, emails and links are removed. Auto-deleted after 90 days.',consent:'I agree to publish the text below publicly and anonymously.'},private:{detail:'Encrypted on this device so only the maintainers can read it. Our server and Cloudflare store only unreadable ciphertext. Replies are encrypted back to a key only this device holds.',consent:'I agree to send the encrypted request below to the maintainers.'}};
+
+/* ============================================================
+   GET HELP
+   ============================================================ */
+let helpGame=null;
+function openHelp(g){
+ helpGame=g;
+ $('help-game-name').textContent=g.name;
+ document.querySelectorAll('input[name=rt]').forEach(r=>r.checked=false);
+ $('help-form').hidden=true;$('help-consent').checked=false;$('help-res').innerHTML='';$('help-err').textContent='';
+ $('help-send').disabled=true;
+ renderInbox();renderCommunity();
+ $('dlg-help').showModal()}
+$('help-close').onclick=()=>$('dlg-help').close();
+
+document.querySelectorAll('input[name=rt]').forEach(r=>r.addEventListener('change',()=>{$('help-form').hidden=false;$('help-consent').checked=false;updHelp()}));
+[$('help-tx'),$('help-os')].forEach(el=>el&&el.addEventListener('input',updHelp));
+$('help-consent').addEventListener('change',updHelp);
+
+function updHelp(){
+ const r=(document.querySelector('input[name=rt]:checked')||{}).value||'';
+ if(!r)return;
+ const info=ROUTE_INFO[r];
+ $('help-rinfo').textContent=info.detail;
+ $('help-consent-label').textContent=info.consent;
+ const symptoms=scrub($('help-tx').value);
+ const p={title:helpGame.name,exe_name:helpGame.exe||helpGame.id+'.exe',os:$('help-os').value,symptoms};
+ $('help-prev').textContent=JSON.stringify(p,null,2);
+ const piracy=PIRACY.test(helpGame.name+' '+$('help-tx').value);
+ $('help-err').textContent=piracy?'We cannot help with cracks, DRM bypass or piracy. Use a legally owned copy.':'';
+ $('help-send').disabled=!(r&&$('help-consent').checked&&symptoms.length>=10&&!piracy)}
+
+$('help-send').onclick=async()=>{
+ const r=(document.querySelector('input[name=rt]:checked')||{}).value||'';
+ const symptoms=scrub($('help-tx').value);
+ const p={title:helpGame.name,exe_name:helpGame.exe||helpGame.id+'.exe',os:$('help-os').value,symptoms};
+ $('help-send').disabled=true;$('help-send').textContent='Sending…';
+ await sleep(500);
+ const res=$('help-res');
+ try{
+  if(r==='ai'){
+   res.innerHTML=`<div class="panel" style="margin-top:8px"><b>Likely causes</b><ul><li>Old audio or graphics runtime missing</li><li>Game pre-dates multi-core CPUs and DPI scaling</li></ul><b>Things to try</b><ul><li>Right-click the .exe → Properties → Compatibility → Windows XP (SP3) and Run as administrator</li><li>Install the publisher's final patch</li><li>Try a community wrapper such as dgVoodoo2 for old Direct3D games</li></ul><p class="muted">This may need a real fix. Post it to the community or send it privately.</p></div>`;
+   log('','INFO ','AI advice returned for '+helpGame.name+' (advice only; no byte patch is ever generated here).');}
+  else if(r==='public'){
+   const id=crypto.randomUUID().slice(0,8);
+   pubPosts.push({id,...p,excerpt:symptoms.slice(0,160),created:new Date().toISOString()});
+   res.innerHTML=`<p class="ok">Posted anonymously (simulated). Auto-deleted after 90 days.</p><b>What the community sees:</b><pre>${esc(JSON.stringify(p,null,2))}</pre>`;
+   log('OK','OK   ','Public request posted for '+helpGame.name+'.');
+   renderCommunity();}
+  else{/* private */
+   const rk=await crypto.subtle.generateKey(EC,false,['deriveBits']);
+   const rpub=b64(await crypto.subtle.exportKey('raw',rk.publicKey));
+   const env=await seal(MPUB,JSON.stringify({...p,reply_pub:rpub}));
+   const id=crypto.randomUUID().slice(0,8);
+   inbox.push({id,env,rk,rpub,title:helpGame.name});
+   res.innerHTML=`<p class="ok">Sent, encrypted.</p>
+<div class="e2e"><h4>What the server and Cloudflare can see (ciphertext only)</h4><pre id="cipher-${id}" style="font-size:.75rem;max-height:90px;overflow:auto"></pre></div>
+<div class="e2e"><h4>Maintainer console (holds the private key)</h4><div class="row"><button id="mdec-${id}">Decrypt inbox</button><button id="mrep-${id}" disabled>Send encrypted reply</button></div><pre id="mout-${id}" hidden></pre></div>
+<div class="e2e"><h4>Back on your device</h4><div class="row"><button id="uchk-${id}">Check for reply</button></div><pre id="uout-${id}" hidden></pre></div>`;
+   $('cipher-'+id).textContent=JSON.stringify(env,null,1).slice(0,480)+(JSON.stringify(env).length>400?'\n  …':'');
+   const last=inbox[inbox.length-1];
+   $('mdec-'+id).onclick=async()=>{try{const t=await openE(MAINT.privateKey,last.env);const out=$('mout-'+id);out.hidden=false;out.textContent=JSON.stringify(JSON.parse(t),null,2);$('mrep-'+id).disabled=false}catch{const out=$('mout-'+id);out.hidden=false;out.textContent='Could not decrypt.'}};
+   $('mrep-'+id).onclick=async()=>{replyBox[last.id]=await seal(last.rpub,'Try the dgVoodoo2 wrapper with the DirectX 8 setting, then let us know if it still crashes.');$('mrep-'+id).textContent='Reply stored (encrypted)';$('mrep-'+id).disabled=true};
+   $('uchk-'+id).onclick=async()=>{const out=$('uout-'+id);out.hidden=false;const e=replyBox[last.id];out.textContent=e?'Decrypted on your device: '+await openE(last.rk.privateKey,e):'No reply yet. (Use the maintainer console above first.)'};
+   log('OK','OK   ','Encrypted request sent for '+helpGame.name+'. Server stored ciphertext only.');
+   renderInbox();}
+ }catch(e){$('help-err').textContent='Something went wrong: '+e.message}
+ $('help-send').textContent='Send';$('help-consent').checked=false;updHelp()};
+
+function renderInbox(){
+ const el=$('help-inbox');
+ if(inbox.length===0){el.innerHTML='';return}
+ let h='<div style="margin-top:12px"><b style="font-size:.9rem">Your sent requests</b>';
+ for(const r of inbox){
+  h+=`<div class="req-item"><p><b>${esc(r.title)}</b> <span class="tag">private · encrypted</span></p>
+  <div class="row"><button onclick="checkReply('${esc(r.id)}')">Check for reply</button></div>
+  <div id="reply-out-${esc(r.id)}" style="margin-top:6px;font-size:.85rem"></div></div>`;}
+ h+='</div>';el.innerHTML=h}
+
+window.checkReply=async function(id){
+ const r=inbox.find(x=>x.id===id);if(!r)return;
+ const out=$('reply-out-'+id);
+ const e=replyBox[id];
+ if(!e){out.textContent='No reply yet.';return}
+ try{out.textContent='Decrypted: '+await openE(r.rk.privateKey,e)}catch{out.textContent='Could not decrypt reply.'}};
+
+function renderCommunity(){
+ const el=$('help-community');
+ if(pubPosts.length===0){el.innerHTML='<button id="btn-loadpub" style="margin-top:4px;font-size:.85rem;min-height:32px;padding:2px 10px">Show open community requests</button>';
+  $('btn-loadpub').onclick=()=>el.innerHTML='<p class="muted" style="margin-top:6px">No public requests yet.</p>';return}
+ let h='<div style="margin-top:10px"><b style="font-size:.9rem">Open community requests</b>';
+ for(const p of pubPosts)h+=`<div class="pub-item"><b>${esc(p.title)}</b> <span class="tag">${esc(p.os)}</span><br><span style="color:var(--muted)">${esc(p.excerpt)}</span></div>`;
+ h+='</div>';el.innerHTML=h}
+
+/* ============================================================
+   THEME
+   ============================================================ */
+$('btn-theme').onclick=function(){const r=document.documentElement,d=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=d?'light':'dark';this.setAttribute('aria-pressed',String(!d))};
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+initCrypto().then(()=>{renderAll();log('','INFO ','Ready. Pick a game and try: Set up game → compat/fix wizard. Patch game → 3-step flow. Simulate other version → then Patch game to see the safe-abort. Get help → private route for real E2EE.')});
+</script>
+</body>
+</html>

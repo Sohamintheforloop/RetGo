@@ -1,0 +1,136 @@
+{
+  "version": 2,
+  "note": "Real games carry no byte patches until a maintainer verifies offsets against a specific build (see README). demo_game is fictional test data.",
+  "games": [
+    {
+      "id": "max_payne",
+      "name": "Max Payne",
+      "year": "2001",
+      "blurb": "Runs the original on Windows 10 and 11 and adds widescreen.",
+      "exe_names": [
+        "MaxPayne.exe"
+      ],
+      "registry_prefixes": [],
+      "builds_sha256": [],
+      "wiki_text": "",
+      "compat": {
+        "recommended": [
+          "DISABLEDXMAXIMIZEDWINDOWEDMODE"
+        ],
+        "optional": [
+          "WINXPSP3",
+          "RUNASADMIN",
+          "HIGHDPIAWARE"
+        ]
+      },
+      "launch_notes": [
+        "Install the fix pack in step 3, then start the game the way you normally do (Steam, or MaxPayne.exe).",
+        "In the game's Options, choose your screen's resolution.",
+        "If it will not start: use Remove in step 3, then try the compatibility options in step 2 one at a time, testing after each."
+      ]
+    },
+    {
+      "id": "max_payne_2",
+      "name": "Max Payne 2: The Fall of Max Payne",
+      "year": "2003",
+      "blurb": "Runs the original on Windows 10 and 11 and adds widescreen.",
+      "exe_names": [
+        "MaxPayne2.exe"
+      ],
+      "registry_prefixes": [],
+      "builds_sha256": [],
+      "wiki_text": "",
+      "compat": {
+        "recommended": [
+          "DISABLEDXMAXIMIZEDWINDOWEDMODE"
+        ],
+        "optional": [
+          "WINXPSP3",
+          "RUNASADMIN",
+          "HIGHDPIAWARE"
+        ]
+      },
+      "launch_notes": [
+        "Install the fix pack in step 3, then start the game the way you normally do (Steam, or MaxPayne2.exe).",
+        "In the game's Options, choose your screen's resolution.",
+        "If it will not start: use Remove in step 3, then try the compatibility options in step 2 one at a time, testing after each."
+      ]
+    },
+    {
+      "id": "stalker",
+      "name": "S.T.A.L.K.E.R.: Shadow of Chernobyl (original 2007 game)",
+      "year": "2007",
+      "blurb": "Compatibility settings for the original game (xr_3DA.exe).",
+      "exe_names": [
+        "xr_3DA.exe"
+      ],
+      "registry_prefixes": [],
+      "builds_sha256": [],
+      "wiki_text": "",
+      "compat": {
+        "recommended": [],
+        "optional": [
+          "DISABLEDXMAXIMIZEDWINDOWEDMODE",
+          "WIN7RTM",
+          "RUNASADMIN",
+          "HIGHDPIAWARE"
+        ]
+      },
+      "launch_notes": [
+        "This entry is for the original 2007 game. The Legends of the Zone Trilogy Enhanced Edition is an official modern release: start it from your game store first, it usually needs no changes.",
+        "No file fixes are bundled for this game. Turn on one compatibility option at a time in step 2 and test after each.",
+        "If your version uses a different .exe, add it with 'Other game' instead."
+      ]
+    },
+    {
+      "id": "other_game",
+      "name": "Other game (any .exe)",
+      "year": "",
+      "blurb": "Compatibility settings for any game: you choose its .exe.",
+      "exe_names": [],
+      "registry_prefixes": [],
+      "builds_sha256": [],
+      "wiki_text": "",
+      "compat": {
+        "recommended": [],
+        "optional": [
+          "WINXPSP3",
+          "WIN7RTM",
+          "WIN98",
+          "RUNASADMIN",
+          "HIGHDPIAWARE",
+          "640X480",
+          "16BITCOLOR"
+        ]
+      },
+      "launch_notes": [
+        "Turn on one compatibility option at a time in step 2 and test the game after each one.",
+        "Use Undo in step 2 to put Windows back exactly as it was."
+      ]
+    },
+    {
+      "id": "demo_game",
+      "name": "Demo game (for testing the app)",
+      "year": "",
+      "blurb": "A fake game used to test every feature safely. Never use it for a real game.",
+      "exe_names": [
+        "DemoGame.exe"
+      ],
+      "registry_prefixes": [
+        "SOFTWARE\\RetroPatcherDemo\\DemoGame"
+      ],
+      "builds_sha256": [],
+      "wiki_text": "[DEMO DATA] Demo game: Fixes\nUsed only to test the app.\nFix 1 (registry): Open HKEY_CURRENT_USER\\SOFTWARE\\RetroPatcherDemo\\DemoGame and set the DWORD value \"ForceSingleCore\" to 1 and the DWORD value \"ScreenWidth\" to 1920.\nFix 2 (executable): In DemoGame.exe at offset 0x1A2B3C replace the bytes 74 05 90 90 with EB 05 90 90.",
+      "compat": {
+        "recommended": [],
+        "optional": [
+          "WINXPSP3",
+          "DISABLEDXMAXIMIZEDWINDOWEDMODE"
+        ]
+      },
+      "launch_notes": [
+        "This is a test game. Nothing here affects a real game."
+      ]
+    }
+  ]
+}

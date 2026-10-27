@@ -1,0 +1,122 @@
+/* Fonts are self-hosted via npm (Fontsource). Both are SIL OFL 1.1 licensed; no Google Fonts request is made. */
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+@import "tailwindcss";
+
+/*
+  Theme tokens. Contrast ratios (WCAG 2.2 AA needs 4.5:1 for text, 3:1 for UI borders):
+  Light  ink #0B2545 on page #F5F1E8 ~ 13:1 | muted #46526B ~ 6.9:1 | line #8C8670 ~ 3.2:1
+  Dark   ink #F2EFE6 on page #0A0A0B ~ 17:1 | muted #B5AFA0 ~ 9:1   | line #8A8576 ~ 5.5:1
+         accent #FFD700 on page ~ 14.5:1     | accent-ink #0A0A0B on accent ~ 14:1
+  Light  accent #000080 on page ~ 14:1       | accent-ink #F5F1E8 on accent ~ 14:1
+*/
+:root {
+  color-scheme: light;
+  --page: #f5f1e8; /* bone white */
+  --card: #fffdf7;
+  --ink: #0b2545; /* navy blue */
+  --muted: #46526b;
+  --line: #8c8670;
+  --soft-line: #d8d2c0;
+  --accent: #000080;
+  --accent-ink: #f5f1e8;
+  --danger: #9b1c1c;
+  --ok: #14532d;
+  --warn: #7a4b00;
+  --focus: #000080;
+}
+
+.dark {
+  color-scheme: dark;
+  --page: #0a0a0b; /* obsidian */
+  --card: #141416;
+  --ink: #f2efe6;
+  --muted: #b5afa0;
+  --line: #8a8576;
+  --soft-line: #2f2f33;
+  --accent: #ffd700; /* gold */
+  --accent-ink: #0a0a0b;
+  --danger: #ff9b9b;
+  --ok: #86efac;
+  --warn: #ffd479;
+  --focus: #ffd700;
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-soft-line: var(--soft-line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-danger: var(--danger);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+
+@layer base {
+  html {
+    scroll-padding-top: 1rem;
+  }
+  body {
+    @apply bg-page text-ink font-sans antialiased;
+    margin: 0;
+    min-height: 100vh;
+  }
+  /* Visible keyboard focus everywhere (WCAG 2.4.7 / 2.4.11) */
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: var(--accent);
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+  }
+  input[type="text"],
+  input[type="password"] {
+    @apply bg-page text-ink border-2 border-line rounded-lg px-3 py-2 w-full font-mono text-sm;
+  }
+  input[type="text"]::placeholder,
+  input[type="password"]::placeholder {
+    color: var(--muted);
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border-2 px-4 py-2 text-sm font-semibold cursor-pointer;
+    min-height: 2.75rem; /* 44px touch/keyboard target */
+  }
+  .btn:disabled {
+    @apply cursor-not-allowed;
+    opacity: 0.6;
+  }
+  .btn-primary {
+    @apply bg-accent text-accent-ink border-accent;
+  }
+  .btn-secondary {
+    @apply bg-transparent text-ink border-line;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--soft-line);
+  }
+  .panel {
+    @apply bg-card border-2 border-soft-line rounded-xl;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin {
+    animation-duration: 3s;
+  }
+  * {
+    scroll-behavior: auto !important;
+  }
+}

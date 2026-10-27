@@ -1,0 +1,215 @@
+{
+  "version": 2,
+  "note": "File fixes. Entries with a 'download' block are fetched from the author's official release by tools/fetch_fixes.py and verified against the pinned SHA-256 values; nothing third-party is stored in the repository. Demo entries are harmless text files. Never edit sha256 values by hand: use tools/fetch_fixes.py --repin or tools/payload_manifest.py.",
+  "fixes": {
+    "max_payne": [
+      {
+        "id": "modern_pack",
+        "name": "Modern Windows fix pack (widescreen, Direct3D, audio, controller)",
+        "description": "Widescreen and ultrawide support, plus Direct3D, audio and controller wrappers so the game runs properly on Windows 10 and 11. Adds program files (.dll, .asi) to the game folder.",
+        "license": "Third-party open-source components. See the upstream project for the exact terms.",
+        "source": "https://github.com/ThirteenAG/WidescreenFixesPack/releases/tag/mp1",
+        "download": {
+          "url": "https://github.com/ThirteenAG/WidescreenFixesPack/releases/download/mp1/MaxPayne.WidescreenFix.zip",
+          "sha256": "c6983068c2de056d1734ac3be4a07900280e90caadd46f3ee23d1643be2fec78",
+          "size": 13024676
+        },
+        "files": [
+          {
+            "member": "alsoft.ini",
+            "payload": "max_payne/modern_pack/alsoft.ini",
+            "dest": "alsoft.ini",
+            "sha256": "72b1fb7cf51ff44b2c6cd33ded91afb6bd81be1fa193642be3cff640415287ae",
+            "size": 27565
+          },
+          {
+            "member": "dinput.dll",
+            "payload": "max_payne/modern_pack/dinput.dll",
+            "dest": "dinput.dll",
+            "sha256": "d5a059aa467a7a7127c8f6169f79fa63ff0f55986ee9eb2fd9a281bebf2aa2e6",
+            "size": 5418336
+          },
+          {
+            "member": "dinputHooked.dll",
+            "payload": "max_payne/modern_pack/dinputHooked.dll",
+            "dest": "dinputHooked.dll",
+            "sha256": "420a8d5dce9ceabd77b525a13a228234a867a4f2b74eba1399143ef37a3a8572",
+            "size": 157696
+          },
+          {
+            "member": "dsoal-aldrv.dll",
+            "payload": "max_payne/modern_pack/dsoal-aldrv.dll",
+            "dest": "dsoal-aldrv.dll",
+            "sha256": "c41e9864e575e1fd6e6412fcae9d9818ee79d183f59ef309783c6cc91adcbefd",
+            "size": 1798656
+          },
+          {
+            "member": "dsound.dll",
+            "payload": "max_payne/modern_pack/dsound.dll",
+            "dest": "dsound.dll",
+            "sha256": "6ad264a4908391005263ec6b7bc09aa51d3e5578639a8fbc620521b1bc433134",
+            "size": 517120
+          },
+          {
+            "member": "MSVCP60.dll",
+            "payload": "max_payne/modern_pack/MSVCP60.dll",
+            "dest": "MSVCP60.dll",
+            "sha256": "d79baf75702d2d806a1b56c480b0425f12a662fefffbf71cc240bbfa37f339d7",
+            "size": 1682664
+          },
+          {
+            "member": "scripts/dxwrapper.asi",
+            "payload": "max_payne/modern_pack/scripts/dxwrapper.asi",
+            "dest": "scripts/dxwrapper.asi",
+            "sha256": "ec42e51cbb4408518d6348706557b18ef50a87485c8bfa1839c895123fa3295f",
+            "size": 8033280
+          },
+          {
+            "member": "scripts/dxwrapper.ini",
+            "payload": "max_payne/modern_pack/scripts/dxwrapper.ini",
+            "dest": "scripts/dxwrapper.ini",
+            "sha256": "dcc3c42ac14d502ae229f059495114d160c59e405a3f1d2cff7a6f7f1f2552f9",
+            "size": 28427
+          },
+          {
+            "member": "scripts/MaxPayne.WidescreenFix.asi",
+            "payload": "max_payne/modern_pack/scripts/MaxPayne.WidescreenFix.asi",
+            "dest": "scripts/MaxPayne.WidescreenFix.asi",
+            "sha256": "4f8f8efa195d06ddf2d9adc78290dfa7fe2506c0df086d2b98a0fe3feae9c736",
+            "size": 3843176
+          },
+          {
+            "member": "scripts/MaxPayne.WidescreenFix.ini",
+            "payload": "max_payne/modern_pack/scripts/MaxPayne.WidescreenFix.ini",
+            "dest": "scripts/MaxPayne.WidescreenFix.ini",
+            "sha256": "807bcf12afaac2682ba33b868909a33174ae74cf2e87c86be93560a0c0fe6f3a",
+            "size": 2822
+          },
+          {
+            "member": "Xidi.32.dll",
+            "payload": "max_payne/modern_pack/Xidi.32.dll",
+            "dest": "Xidi.32.dll",
+            "sha256": "57859aba7fc67adf039119a05937fee40b53c53041b63645b761337abb98da77",
+            "size": 686592
+          },
+          {
+            "member": "Xidi.ini",
+            "payload": "max_payne/modern_pack/Xidi.ini",
+            "dest": "Xidi.ini",
+            "sha256": "bbf97357428e5d4ef7a06e43616889572b6ba9dd0ef38847e6c8c5766efd92f8",
+            "size": 3400
+          }
+        ]
+      }
+    ],
+    "max_payne_2": [
+      {
+        "id": "modern_pack",
+        "name": "Modern Windows fix pack (widescreen, Direct3D, audio, controller)",
+        "description": "Widescreen and ultrawide support, plus Direct3D, audio and controller wrappers so the game runs properly on Windows 10 and 11. Adds program files (.dll, .asi) to the game folder.",
+        "license": "Third-party open-source components. See the upstream project for the exact terms.",
+        "source": "https://github.com/ThirteenAG/WidescreenFixesPack/releases/tag/mp2",
+        "download": {
+          "url": "https://github.com/ThirteenAG/WidescreenFixesPack/releases/download/mp2/MaxPayne2.WidescreenFix.zip",
+          "sha256": "53bcfa5ce5d5a15db87e8282c5ce517bafc7deaa87c561f86c41dbbab64fcd93",
+          "size": 12865752
+        },
+        "files": [
+          {
+            "member": "dinput.dll",
+            "payload": "max_payne_2/modern_pack/dinput.dll",
+            "dest": "dinput.dll",
+            "sha256": "420a8d5dce9ceabd77b525a13a228234a867a4f2b74eba1399143ef37a3a8572",
+            "size": 157696
+          },
+          {
+            "member": "dsoal-aldrv.dll",
+            "payload": "max_payne_2/modern_pack/dsoal-aldrv.dll",
+            "dest": "dsoal-aldrv.dll",
+            "sha256": "c41e9864e575e1fd6e6412fcae9d9818ee79d183f59ef309783c6cc91adcbefd",
+            "size": 1798656
+          },
+          {
+            "member": "dsound.dll",
+            "payload": "max_payne_2/modern_pack/dsound.dll",
+            "dest": "dsound.dll",
+            "sha256": "6ad264a4908391005263ec6b7bc09aa51d3e5578639a8fbc620521b1bc433134",
+            "size": 517120
+          },
+          {
+            "member": "scripts/dxwrapper.asi",
+            "payload": "max_payne_2/modern_pack/scripts/dxwrapper.asi",
+            "dest": "scripts/dxwrapper.asi",
+            "sha256": "ec42e51cbb4408518d6348706557b18ef50a87485c8bfa1839c895123fa3295f",
+            "size": 8033280
+          },
+          {
+            "member": "scripts/dxwrapper.ini",
+            "payload": "max_payne_2/modern_pack/scripts/dxwrapper.ini",
+            "dest": "scripts/dxwrapper.ini",
+            "sha256": "dcc3c42ac14d502ae229f059495114d160c59e405a3f1d2cff7a6f7f1f2552f9",
+            "size": 28427
+          },
+          {
+            "member": "scripts/MaxPayne2.WidescreenFix.asi",
+            "payload": "max_payne_2/modern_pack/scripts/MaxPayne2.WidescreenFix.asi",
+            "dest": "scripts/MaxPayne2.WidescreenFix.asi",
+            "sha256": "30abc475ad32daaddede653c0cfa5d2e474efc6cfb4a899c72ab2d5a33ccb067",
+            "size": 4253792
+          },
+          {
+            "member": "scripts/MaxPayne2.WidescreenFix.ini",
+            "payload": "max_payne_2/modern_pack/scripts/MaxPayne2.WidescreenFix.ini",
+            "dest": "scripts/MaxPayne2.WidescreenFix.ini",
+            "sha256": "2b1bd35717b98f56c74e46cd408c16b007cd72148aab62d1ed1b2768f4a68e71",
+            "size": 2785
+          },
+          {
+            "member": "winmm.dll",
+            "payload": "max_payne_2/modern_pack/winmm.dll",
+            "dest": "winmm.dll",
+            "sha256": "d5a059aa467a7a7127c8f6169f79fa63ff0f55986ee9eb2fd9a281bebf2aa2e6",
+            "size": 5418336
+          },
+          {
+            "member": "Xidi.32.dll",
+            "payload": "max_payne_2/modern_pack/Xidi.32.dll",
+            "dest": "Xidi.32.dll",
+            "sha256": "57859aba7fc67adf039119a05937fee40b53c53041b63645b761337abb98da77",
+            "size": 686592
+          },
+          {
+            "member": "Xidi.ini",
+            "payload": "max_payne_2/modern_pack/Xidi.ini",
+            "dest": "Xidi.ini",
+            "sha256": "bbf97357428e5d4ef7a06e43616889572b6ba9dd0ef38847e6c8c5766efd92f8",
+            "size": 3400
+          }
+        ]
+      }
+    ],
+    "demo_game": [
+      {
+        "id": "demo_config",
+        "name": "Demo: harmless config files",
+        "description": "Two text files that prove the file-fix engine works. Used only for testing the app.",
+        "license": "CC0-1.0 (written for this project)",
+        "source": "This repository: payloads/demo_game/demo_config",
+        "files": [
+          {
+            "payload": "demo_game/demo_config/rgap_demo.ini",
+            "dest": "rgap_demo.ini",
+            "sha256": "9146369b92de1ef1078a211bc15fdd564b0b87f5f421d9a07001b874ab13ccf9",
+            "size": 108
+          },
+          {
+            "payload": "demo_game/demo_config/rgap_demo_readme.txt",
+            "dest": "rgap_demo_readme.txt",
+            "sha256": "9adb6c06b3f75e74a5484e5295b06f6e0b61e1b7bc0ef83f2972e4c08a2ccb57",
+            "size": 123
+          }
+        ]
+      }
+    ]
+  }
+}

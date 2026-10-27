@@ -1,0 +1,48 @@
+# --- Secrets (never commit) ---
+.env
+.env.*
+.dev.vars
+!*.example
+*.pem
+*.pfx
+*.key
+
+# --- Node / Vite / Wrangler ---
+node_modules/
+frontend/dist/
+worker/.wrangler/
+worker/dist/
+*.tsbuildinfo
+npm-debug.log*
+
+# --- Python / PyInstaller ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+backend/build/
+backend/dist/
+*.egg-info/
+
+# --- Packaged output and game artefacts ---
+*.exe
+*.bak
+*.msi
+
+# --- Logs, OS, editors ---
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# --- Maintainer secrets ---
+maintainer_private*.pem
+
+# --- test output ---
+worker/test/.out.mjs
+
+# --- third-party fix packs: fetched from the author's official release by tools/fetch_fixes.py, never committed ---
+/payloads/max_payne/
+/payloads/max_payne_2/
